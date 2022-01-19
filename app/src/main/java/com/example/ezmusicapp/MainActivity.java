@@ -184,6 +184,7 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
                 songList.add(new Song(title, artist, duration, false, songUri));
             }
             songsAdapter = new SongsAdapter(songList, this);
+
             songsRV.setAdapter(songsAdapter);
         }
         cursor.close();
