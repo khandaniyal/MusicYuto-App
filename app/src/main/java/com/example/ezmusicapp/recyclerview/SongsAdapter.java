@@ -29,9 +29,11 @@ public class SongsAdapter extends RecyclerView.Adapter<SongsAdapter.ViewHolder> 
     @Override
     public int getItemCount() { return 0; }
 
-    public class ViewHolder extends RecyclerView.Adapter{
+    /////REMINDER CREATE CUSTOM SONGS CARDVIEW XML TO DISPLAY
+    public class ViewHolder extends RecyclerView.ViewHolder{
 
       public ViewHolder(@NonNull View itemView){
+
           super(itemView);
       }
     }
