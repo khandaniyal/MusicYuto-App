@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
         }
         cursor.close();
     }
-
+    //alohaaaaaaaaaaaaaaaaaaaaaa
     @Override
     public void onChanged(int pos) {
         if(songPlayer.isPlaying()){
