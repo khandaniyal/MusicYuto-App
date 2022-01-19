@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
         });
 
     }
-
+    //sergi eres un enfermo culero
     public void runtimePermission(){
         Dexter.withContext(this)
                 .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
