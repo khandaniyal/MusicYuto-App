@@ -86,15 +86,14 @@
 
             <SeekBar
                 android:id="@+id/seekbar"
-                android:thumb="@drawable/custom_seekbar_thumb"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toStartOf="@+id/txtMinEnd"
                 android:layout_toEndOf="@+id/txtMinStart"
                 android:max="100"
-                android:progress="50"
-                android:progressDrawable="@drawable/custom_seekbar" />
+                android:progressDrawable="@drawable/custom_seekbar"
+                android:thumb="@drawable/custom_seekbar_thumb" />
 
             <TextView
                 android:id="@+id/txtMinEnd"
@@ -119,13 +118,21 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:src="@drawable/ic_previous_arrow"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/playPause"
+                android:layout_width="110dp"
+                android:layout_height="120dp"
+                app:cardBackgroundColor="@color/dark"
+                app:cardUseCompatPadding="true"
+                app:cardElevation="10dp"
+                app:cardCornerRadius="20dp">
 
-            <ImageView
-                android:id="@+id/imgPlayBtn"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
-                android:src="@drawable/ic_play_arrow"/>
-
+                <ImageView
+                    android:id="@+id/imgPlayBtn"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_play_arrow"/>
+            </androidx.cardview.widget.CardView>
             <ImageView
                 android:id="@+id/imgNextBtn"
                 android:layout_width="50dp"
