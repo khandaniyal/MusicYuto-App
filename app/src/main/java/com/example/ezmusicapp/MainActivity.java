@@ -238,7 +238,9 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
                 playPauseImg.setImageResource(R.drawable.ic_pause);
             }
         });
+
         timer = new Timer();
+
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
@@ -246,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
                     @Override
                     public void run() {
                         int generateCurrentDuration = songPlayer.getCurrentPosition();
+
                         //Convert song duration into the correct format
                         String duration = String.format(Locale.getDefault(), "%02d:%02d",
                                 TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(generateCurrentDuration))),
