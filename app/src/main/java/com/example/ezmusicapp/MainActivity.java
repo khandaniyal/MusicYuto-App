@@ -72,20 +72,17 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
         endTime = findViewById(R.id.txtMinEnd);
         songBar = findViewById(R.id.seekbar);
 
-        //set rv
+        //set rv layout
         songsRV.setHasFixedSize(true);
         songsRV.setLayoutManager(new LinearLayoutManager(this));
 
+        //initialize media player
         songPlayer = new MediaPlayer();
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            }, 11);
-        }
-
+        //ask the user for permissions
         runtimePermission();
 
+        //user interaction
         previousImg.setOnClickListener(e->{
             int goPrevSong = currentSongPos-1;
 
@@ -141,55 +138,37 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
         });
 
     }
-    //sergi eres un enfermo culero
+    //sergi eres un enfermo
     public void runtimePermission(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, 11);
+        }
+
         Dexter.withContext(this)
                 .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .withListener(new PermissionListener() {
             @Override
-            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) { loadAudioFiles(); }
+            public void onPermissionGranted(PermissionGrantedResponse permissionGrantedResponse) {
+                loadAudioFiles();
 
+            }
             @Override
             public void onPermissionDenied(PermissionDeniedResponse permissionDeniedResponse) {
                 Toast.makeText(getApplicationContext(), "You declined the permission", Toast.LENGTH_SHORT).show();
             }
-
             @Override
             public void onPermissionRationaleShouldBeShown(PermissionRequest permissionRequest, PermissionToken permissionToken) { permissionToken.continuePermissionRequest(); }
         }).check();
     }
-    @SuppressLint("Range")
-     public void loadAudioFiles() {
-        ContentResolver contentResolver = getContentResolver();
-        Uri uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String select = MediaStore.Audio.Media.DATA + " LIKE?";
-        String orderBy = MediaStore.Audio.Media.DATE_TAKEN + " DESC";
-        Cursor cursor = contentResolver.query(uri, null, select , new String[]{"%.mp3%"}, orderBy);
 
-        if(cursor == null) Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
-
-        if(!cursor.moveToNext()) Toast.makeText(this, "Cannot locate audio files", Toast.LENGTH_SHORT).show();
-
-        if(cursor != null && cursor.getCount() > 0){
-            songList = new ArrayList<>();
-            while (cursor.moveToNext()) {
-                String title = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.TITLE));
-                long id = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
-                String artist = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST));
-                Uri songUri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
-                String duration = "00:00";
-
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) duration = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION));
-
-                songList.add(new Song(title, artist, duration, false, songUri));
-            }
-            songsAdapter = new SongsAdapter(songList, this);
-
-            songsRV.setAdapter(songsAdapter);
-        }
-        cursor.close();
+    public void loadAudioFiles(){
+        songList = SongPlayer.getAudioFiles(this, songList, getContentResolver());
+        songsAdapter = new SongsAdapter(songList, this);
+        songsRV.setAdapter(songsAdapter);
     }
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void onChanged(int pos) {
         if(songPlayer.isPlaying()){
