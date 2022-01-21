@@ -178,81 +178,64 @@ public class MainActivity extends AppCompatActivity implements OnSongChangeListe
 
         songPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            songPlayer.setDataSource(MainActivity.this, songList.get(pos).getSongFile());
-                            songPlayer.prepare();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            Toast.makeText(MainActivity.this, "unable to load track", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+        new Thread(() -> runOnUiThread(() -> {
+            try {
+                songPlayer.setDataSource(MainActivity.this, songList.get(pos).getSongFile());
+                songPlayer.prepare();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(MainActivity.this, "unable to load track", Toast.LENGTH_SHORT).show();
             }
-        }).start();
+        })).start();
 
-        songPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mediaPlayer) {
-                int getTotalDuration = mediaPlayer.getDuration();
+        songPlayer.setOnPreparedListener(mediaPlayer -> {
+            int getTotalDuration = mediaPlayer.getDuration();
 
-                //Convert song duration into the correct format
-                String duration = String.format(Locale.getDefault(), "%02d:%02d",
-                        TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(getTotalDuration))),
-                        TimeUnit.MILLISECONDS.toSeconds(Long.parseLong(String.valueOf(getTotalDuration))),
-                        TimeUnit.MILLISECONDS.toSeconds(TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(getTotalDuration)))));
+            //Convert song duration into the correct format
+            String duration = String.format(Locale.getDefault(), "%02d:%02d",
+                    TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(getTotalDuration))),
+                    TimeUnit.MILLISECONDS.toSeconds(Long.parseLong(String.valueOf(getTotalDuration))),
+                    TimeUnit.MILLISECONDS.toSeconds(TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(getTotalDuration)))));
 
-                endTime.setText(duration);
-                isPlaying = true;
+            endTime.setText(duration);
+            isPlaying = true;
 
-                mediaPlayer.start();
+            mediaPlayer.start();
 
-                songBar.setMax(getTotalDuration);
+            songBar.setMax(getTotalDuration);
 
-                playPauseImg.setImageResource(R.drawable.ic_pause);
-            }
+            playPauseImg.setImageResource(R.drawable.ic_pause);
         });
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int generateCurrentDuration = songPlayer.getCurrentPosition();
-                        //Convert song duration into the correct format
-                        String duration = String.format(Locale.getDefault(), "%02d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(generateCurrentDuration))),
-                                TimeUnit.MILLISECONDS.toSeconds(Long.parseLong(String.valueOf(generateCurrentDuration))),
-                                TimeUnit.MILLISECONDS.toSeconds(TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(generateCurrentDuration)))));
+                runOnUiThread(() -> {
+                    int generateCurrentDuration = songPlayer.getCurrentPosition();
+                    //Convert song duration into the correct format
+                    String duration = String.format(Locale.getDefault(), "%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(generateCurrentDuration))),
+                            TimeUnit.MILLISECONDS.toSeconds(Long.parseLong(String.valueOf(generateCurrentDuration))),
+                            TimeUnit.MILLISECONDS.toSeconds(TimeUnit.MILLISECONDS.toMinutes(Long.parseLong(String.valueOf(generateCurrentDuration)))));
 
-                        songBar.setProgress(generateCurrentDuration);
-                        startTime.setText(duration);
-                    }
+                    songBar.setProgress(generateCurrentDuration);
+                    startTime.setText(duration);
                 });
             }
         }, 1000, 1000);
 
-        songPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                songPlayer.reset();
+        songPlayer.setOnCompletionListener(mediaPlayer -> {
+            songPlayer.reset();
 
-                timer.purge();
-                timer.cancel();
+            timer.purge();
+            timer.cancel();
 
-                isPlaying = false;
+            isPlaying = false;
 
-                playPauseImg.setImageResource(R.drawable.ic_play_arrow);
+            playPauseImg.setImageResource(R.drawable.ic_play_arrow);
 
-                songBar.setProgress(0);
+            songBar.setProgress(0);
 
-            }
         });
     }
 }
